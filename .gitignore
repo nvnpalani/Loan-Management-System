@@ -1,0 +1,4 @@
+node_modules/
+back-end/node_modules/
+angular19-LMS/node_modules/
+.env
