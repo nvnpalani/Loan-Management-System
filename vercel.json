@@ -1,0 +1,10 @@
+{
+  "buildCommand": "cd angular19-LMS && npm install && npm run build",
+  "outputDirectory": "angular19-LMS/dist/angular19/browser",
+  "rewrites": [
+    {
+      "source": "/(.*)",
+      "destination": "/index.html"
+    }
+  ]
+}
