@@ -1,0 +1,22 @@
+    <div *ngIf="isOpen" class="fixed inset-0 z-50 flex items-center justify-center p-4 sm:p-0">
+      <!-- Backdrop -->
+      <div class="fixed inset-0 bg-slate-900/60 backdrop-blur-sm transition-opacity" (click)="close()"></div>
+
+      <!-- Modal Panel -->
+      <div class="relative bg-white rounded-xl shadow-2xl w-full max-w-lg overflow-hidden flex flex-col max-h-[90vh]">
+        <!-- Header -->
+        <div class="px-6 py-4 border-b border-slate-200 flex items-center justify-between bg-slate-50">
+          <h3 class="text-lg font-bold text-slate-800">{{ title }}</h3>
+          <button (click)="close()" class="text-slate-400 hover:text-slate-600 transition-colors">
+            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+            </svg>
+          </button>
+        </div>
+
+        <!-- Content -->
+        <div class="p-6 overflow-y-auto">
+          <ng-content></ng-content>
+        </div>
+      </div>
+    </div>

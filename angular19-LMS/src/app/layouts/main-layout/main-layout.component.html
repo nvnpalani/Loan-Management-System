@@ -1,0 +1,141 @@
+<div class="min-h-screen flex flex-col md:flex-row bg-[#f8fafc] relative">
+  
+  @if (isMobileSidebarOpen) {
+    <!-- Mobile Overlay -->
+    <div class="fixed inset-0 bg-slate-900/50 z-20 md:hidden" (click)="closeMobileSidebar()"></div>
+  }
+
+  <!-- Sidebar -->
+  <aside 
+    [ngClass]="{
+      'translate-x-0': isMobileSidebarOpen,
+      '-translate-x-full': !isMobileSidebarOpen,
+      'md:translate-x-0': true,
+      'w-64': !isSidebarCollapsed,
+      'w-20': isSidebarCollapsed
+    }"
+    class="fixed inset-y-0 left-0 bg-[#1e293b] text-slate-300 flex flex-col shadow-xl z-30 transition-all duration-300 md:relative">
+    
+    <!-- Sidebar Toggle Arrow (Right Edge) -->
+    <button (click)="toggleSidebar()" 
+            class="hidden md:flex absolute -right-3 top-8 w-6 h-6 bg-[#1e293b] border border-slate-700 rounded-full items-center justify-center text-slate-400 hover:text-white hover:bg-slate-800 transition-colors z-40 shadow-sm" 
+            title="Toggle Sidebar">
+      @if (isSidebarCollapsed) {
+        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path></svg>
+      } @else {
+        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"></path></svg>
+      }
+    </button>
+    <!-- Logo -->
+    <div class="h-16 flex items-center justify-between px-6 border-b border-slate-700/50">
+      <h1 class="text-xl font-bold text-white flex items-center gap-3 whitespace-nowrap overflow-hidden transition-all duration-300">
+        <div class="bg-indigo-500 text-white p-1.5 rounded-md shrink-0">
+          <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+        </div>
+        @if (!isSidebarCollapsed) {
+          <span>Finance Admin</span>
+        }
+      </h1>
+      <!-- Close button for mobile -->
+      <button class="md:hidden text-slate-400 hover:text-white" (click)="closeMobileSidebar()">
+        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>
+      </button>
+    </div>
+
+    <!-- Navigation -->
+    <nav class="flex-1 overflow-y-auto py-4 scrollbar-thin overflow-x-hidden">
+      
+      <!-- Dashboard -->
+      <div class="px-4 mb-4">
+        <a routerLink="/dashboard" routerLinkActive="bg-indigo-600 text-white shadow-lg shadow-indigo-500/30" 
+           class="flex items-center gap-3 px-4 py-2.5 rounded-lg text-sm font-medium hover:bg-slate-800 hover:text-white transition-all group"
+           [title]="isSidebarCollapsed ? 'Dashboard' : ''">
+          <svg class="w-5 h-5 opacity-75 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2V6zM14 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2V6zM4 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2v-2zM14 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2v-2z"></path></svg>
+          @if (!isSidebarCollapsed) {
+            <span>Dashboard</span>
+          }
+        </a>
+      </div>
+
+      <!-- Main Menu -->
+      <div class="px-4 space-y-1 mb-6">
+        <!-- 2. Customer -->
+        <a routerLink="/customers" routerLinkActive="bg-indigo-600 text-white shadow-lg shadow-indigo-500/30" 
+           class="flex items-center gap-3 px-4 py-2.5 rounded-lg text-sm font-medium hover:bg-slate-800 hover:text-white transition-all group"
+           [title]="isSidebarCollapsed ? 'Customers' : ''">
+          <svg class="w-5 h-5 opacity-75 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z"></path></svg>
+          @if (!isSidebarCollapsed) {
+            <span>Customers</span>
+          }
+        </a>
+
+        <!-- 3. Collection -->
+        <a routerLink="/collections" routerLinkActive="bg-indigo-600 text-white shadow-lg shadow-indigo-500/30" 
+           class="flex items-center gap-3 px-4 py-2.5 rounded-lg text-sm font-medium hover:bg-slate-800 hover:text-white transition-all group"
+           [title]="isSidebarCollapsed ? 'Collections' : ''">
+          <svg class="w-5 h-5 opacity-75 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 10h18M7 15h1m4 0h1m-7 4h12a3 3 0 003-3V8a3 3 0 00-3-3H6a3 3 0 00-3 3v8a3 3 0 003 3z"></path></svg>
+          @if (!isSidebarCollapsed) {
+            <span>Collections</span>
+          }
+        </a>
+
+        <!-- 4. Reports -->
+        <a routerLink="/reports" routerLinkActive="bg-indigo-600 text-white shadow-lg shadow-indigo-500/30" 
+           class="flex items-center gap-3 px-4 py-2.5 rounded-lg text-sm font-medium hover:bg-slate-800 hover:text-white transition-all group"
+           [title]="isSidebarCollapsed ? 'Reports' : ''">
+          <svg class="w-5 h-5 opacity-75 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 17v-2m3 2v-4m3 4v-6m2 10H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path></svg>
+          @if (!isSidebarCollapsed) {
+            <span>Reports</span>
+          }
+        </a>
+
+        <!-- 5. Investor (previously created) -->
+        <a routerLink="/investor" routerLinkActive="bg-indigo-600 text-white shadow-lg shadow-indigo-500/30" 
+           class="flex items-center gap-3 px-4 py-2.5 rounded-lg text-sm font-medium hover:bg-slate-800 hover:text-white transition-all group"
+           [title]="isSidebarCollapsed ? 'Investor' : ''">
+          <svg class="w-5 h-5 opacity-75 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6"></path></svg>
+          @if (!isSidebarCollapsed) {
+            <span>Investor</span>
+          }
+        </a>
+      </div>
+    </nav>
+
+    <div class="p-4 border-t border-slate-800 flex flex-col gap-2">
+      <button (click)="logout()" class="w-full flex items-center justify-between p-2 rounded-lg hover:bg-slate-800 transition-colors" [title]="isSidebarCollapsed ? 'Logout' : ''">
+        <div class="flex items-center gap-3 overflow-hidden">
+          <div class="w-9 h-9 rounded-full bg-slate-700 flex items-center justify-center border border-slate-600 shadow-sm shrink-0">
+            <svg class="w-5 h-5 text-slate-300" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M10 9a3 3 0 100-6 3 3 0 000 6zm-7 9a7 7 0 1114 0H3z" clip-rule="evenodd"></path></svg>
+          </div>
+          @if (!isSidebarCollapsed) {
+            <div class="text-left truncate">
+              <p class="text-sm font-semibold text-white truncate">Admin User</p>
+              <p class="text-xs text-slate-400 truncate">admin&#64;gmail.com</p>
+            </div>
+          }
+        </div>
+        @if (!isSidebarCollapsed) {
+          <svg class="w-4 h-4 text-slate-500 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"></path></svg>
+        }
+      </button>
+    </div>
+  </aside>
+
+  <!-- Main Content -->
+  <main class="flex-1 flex flex-col h-screen overflow-hidden bg-slate-50 relative w-full">
+    <!-- Mobile Header -->
+    <header class="md:hidden h-16 bg-white border-b border-slate-200 flex items-center px-4 shrink-0 shadow-sm">
+      <button (click)="toggleMobileSidebar()" class="text-slate-500 hover:text-slate-700 focus:outline-none p-2 rounded-md hover:bg-slate-100 transition-colors">
+        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"></path>
+        </svg>
+      </button>
+      <div class="ml-4 font-bold text-slate-800 text-lg">Finance Admin</div>
+    </header>
+
+    <!-- Page Content -->
+    <div class="flex-1 overflow-y-auto w-full">
+      <router-outlet></router-outlet>
+    </div>
+  </main>
+</div>

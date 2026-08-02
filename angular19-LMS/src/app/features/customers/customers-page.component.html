@@ -1,0 +1,329 @@
+<div class="p-4 md:p-6 space-y-6 max-w-7xl mx-auto">
+  
+  <div class="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
+    <div>
+      <h2 class="text-2xl font-bold text-slate-800">Customer Management</h2>
+      <p class="text-sm text-slate-500 mt-1">Manage your customers, their loans, and payment histories.</p>
+    </div>
+    <button (click)="openAddModal()" class="px-4 py-2 bg-indigo-600 text-white text-sm font-medium rounded-lg hover:bg-indigo-700 transition-colors shadow-sm flex items-center gap-2">
+      <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M18 9v3m0 0v3m0-3h3m-3 0h-3m-2-5a4 4 0 11-8 0 4 4 0 018 0zM3 20a6 6 0 0112 0v1H3v-1z"></path></svg>
+      Add Customer
+    </button>
+  </div>
+
+  <!-- Filters -->
+  <div class="bg-white p-4 rounded-xl shadow-sm border border-slate-200 flex flex-col md:flex-row gap-4 items-center">
+    <div class="flex-1 w-full relative">
+      <svg class="w-5 h-5 text-slate-400 absolute left-3 top-1/2 -translate-y-1/2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path></svg>
+      <input type="text" [(ngModel)]="searchTerm" (ngModelChange)="applyFilters()" class="w-full pl-10 pr-4 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 outline-none transition-all" placeholder="Search by name, ID or phone...">
+    </div>
+    <div class="w-full md:w-64">
+      <select [(ngModel)]="selectedArea" (ngModelChange)="applyFilters()" class="w-full px-4 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 outline-none transition-all bg-white">
+        <option value="">All Areas</option>
+        @for (area of availableAreas; track area) {
+          <option [value]="area">{{ area }}</option>
+        }
+      </select>
+    </div>
+  </div>
+
+  <!-- Customers Table -->
+  <div class="bg-white rounded-xl shadow-sm border border-slate-200 overflow-hidden">
+    <div class="overflow-x-auto">
+      <table class="w-full text-left border-collapse">
+        <thead>
+          <tr class="bg-slate-50 border-b border-slate-200">
+            <th class="py-3 px-4 font-semibold text-sm text-slate-600 whitespace-nowrap">S.No</th>
+            <th class="py-3 px-4 font-semibold text-sm text-slate-600 whitespace-nowrap">Customer</th>
+            <th class="py-3 px-4 font-semibold text-sm text-slate-600 whitespace-nowrap">Area</th>
+            <th class="py-3 px-4 font-semibold text-sm text-slate-600 whitespace-nowrap text-right">Loan Amount</th>
+            <th class="py-3 px-4 font-semibold text-sm text-slate-600 whitespace-nowrap text-center">Status</th>
+            <th class="py-3 px-4 font-semibold text-sm text-slate-600 whitespace-nowrap text-center">Actions</th>
+          </tr>
+        </thead>
+        <tbody>
+          @for (customer of paginatedCustomers; track customer.id; let i = $index) {
+            <tr class="border-b border-slate-100 hover:bg-slate-50 transition-colors">
+              <td class="py-3 px-4 text-sm text-slate-700">{{ (currentPage - 1) * pageSize + i + 1 }}</td>
+              <td class="py-3 px-4">
+                <div class="flex items-center gap-3">
+                  <div class="w-8 h-8 rounded-full bg-slate-200 flex items-center justify-center text-slate-500 font-medium text-xs uppercase">
+                    {{ customer.name ? customer.name.charAt(0) : 'C' }}
+                  </div>
+                  <div>
+                    <p class="text-sm font-medium text-slate-800">{{ customer.name }}</p>
+                    <p class="text-xs text-slate-500">{{ customer.customer_id }} • {{ customer.phone }}</p>
+                  </div>
+                </div>
+              </td>
+              <td class="py-3 px-4 text-sm text-slate-700">{{ customer.area }}</td>
+              <td class="py-3 px-4 text-sm font-semibold text-slate-800 text-right">{{ customer.loan_amount | currency:'INR':'symbol':'1.0-0' }}</td>
+              <td class="py-3 px-4 text-center">
+                @if (customer.pending_amount === 0) {
+                  <span class="inline-flex items-center px-2 py-0.5 rounded text-xs font-medium bg-emerald-100 text-emerald-800">Completed</span>
+                } @else {
+                  <span class="inline-flex items-center px-2 py-0.5 rounded text-xs font-medium bg-amber-100 text-amber-800">Active</span>
+                }
+              </td>
+              <td class="py-3 px-4 text-center">
+                <div class="flex items-center justify-center gap-3">
+                  <button (click)="viewDetails(customer)" class="text-blue-600 hover:text-blue-900 transition-colors" title="View Details">
+                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"></path></svg>
+                  </button>
+                  <button (click)="openEditModal(customer)" class="text-indigo-600 hover:text-indigo-900 transition-colors" title="Edit">
+                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z"></path></svg>
+                  </button>
+                  <button (click)="deleteCustomer(customer)" class="text-red-500 hover:text-red-700 transition-colors" title="Delete">
+                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path></svg>
+                  </button>
+                </div>
+              </td>
+            </tr>
+          } @empty {
+            <tr>
+              <td colspan="6" class="py-8 text-center text-slate-500">
+                No customers found. Try adjusting your filters or add a new customer.
+              </td>
+            </tr>
+          }
+        </tbody>
+      </table>
+    </div>
+    
+    <!-- Pagination -->
+    @if (totalPages > 1) {
+      <div class="px-4 py-3 border-t border-slate-200 bg-slate-50 flex items-center justify-between">
+        <p class="text-sm text-slate-600">
+          Showing <span class="font-medium">{{ (currentPage - 1) * pageSize + 1 }}</span> to <span class="font-medium">{{ Math.min(currentPage * pageSize, filteredCustomers.length) }}</span> of <span class="font-medium">{{ filteredCustomers.length }}</span> customers
+        </p>
+        <div class="flex items-center gap-2">
+          <button (click)="prevPage()" [disabled]="currentPage === 1" class="px-3 py-1 border border-slate-300 rounded-md text-sm font-medium bg-white text-slate-700 hover:bg-slate-50 disabled:opacity-50 disabled:cursor-not-allowed">Previous</button>
+          <button (click)="nextPage()" [disabled]="currentPage === totalPages" class="px-3 py-1 border border-slate-300 rounded-md text-sm font-medium bg-white text-slate-700 hover:bg-slate-50 disabled:opacity-50 disabled:cursor-not-allowed">Next</button>
+        </div>
+      </div>
+    }
+  </div>
+</div>
+
+<!-- Add/Edit Modal -->
+@if (showModal) {
+  <div class="fixed inset-0 bg-slate-900/60 z-50 flex items-center justify-center p-4">
+    <div class="bg-white rounded-xl shadow-xl w-full max-w-2xl overflow-hidden flex flex-col max-h-[90vh]">
+      <div class="px-6 py-4 border-b border-slate-200 flex items-center justify-between shrink-0">
+        <h3 class="text-lg font-bold text-slate-800">{{ isEditMode ? 'Edit Customer' : 'Add New Customer' }}</h3>
+        <button (click)="closeModal()" class="text-slate-400 hover:text-slate-600 transition-colors">
+          <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>
+        </button>
+      </div>
+      
+      <form #customerForm="ngForm" (ngSubmit)="saveCustomer()" class="flex flex-col min-h-0">
+        <div class="p-6 overflow-y-auto custom-scrollbar flex-1">
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <!-- ID -->
+            <div>
+              <label class="block text-sm font-medium text-slate-700 mb-1">Customer ID <span class="text-red-500">*</span></label>
+              <input type="text" name="custId" [(ngModel)]="currentCustomer.customer_id" required #custId="ngModel" class="w-full px-4 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 outline-none transition-all" [class.border-red-500]="custId.invalid && (custId.dirty || custId.touched)">
+            </div>
+            <!-- Name -->
+            <div>
+              <label class="block text-sm font-medium text-slate-700 mb-1">Full Name <span class="text-red-500">*</span></label>
+              <input type="text" name="custName" [(ngModel)]="currentCustomer.name" required #custName="ngModel" class="w-full px-4 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 outline-none transition-all" [class.border-red-500]="custName.invalid && (custName.dirty || custName.touched)">
+            </div>
+            <!-- Phone -->
+            <div>
+              <label class="block text-sm font-medium text-slate-700 mb-1">Phone Number <span class="text-red-500">*</span></label>
+              <input type="text" name="custPhone" [(ngModel)]="currentCustomer.phone" required pattern="^[0-9]{10}$" maxlength="10" (keypress)="numberOnly($event, 10, currentCustomer.phone)" #custPhone="ngModel" class="w-full px-4 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 outline-none transition-all" [class.border-red-500]="custPhone.invalid && (custPhone.dirty || custPhone.touched)">
+            </div>
+            <!-- Area -->
+            <div>
+              <label class="block text-sm font-medium text-slate-700 mb-1">Area <span class="text-red-500">*</span></label>
+              <input type="text" name="custArea" [(ngModel)]="currentCustomer.area" required #custArea="ngModel" class="w-full px-4 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 outline-none transition-all" [class.border-red-500]="custArea.invalid && (custArea.dirty || custArea.touched)">
+            </div>
+            <!-- Address -->
+            <div class="md:col-span-2">
+              <label class="block text-sm font-medium text-slate-700 mb-1">Address <span class="text-red-500">*</span></label>
+              <input type="text" name="custAddress" [(ngModel)]="currentCustomer.address" required #custAddress="ngModel" class="w-full px-4 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 outline-none transition-all" [class.border-red-500]="custAddress.invalid && (custAddress.dirty || custAddress.touched)">
+            </div>
+            <!-- Work -->
+            <div>
+              <label class="block text-sm font-medium text-slate-700 mb-1">Occupation / Work</label>
+              <input type="text" name="custWork" [(ngModel)]="currentCustomer.work" class="w-full px-4 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 outline-none transition-all">
+            </div>
+            <!-- Loan Amount -->
+            <div>
+              <label class="block text-sm font-medium text-slate-700 mb-1">Loan Amount (₹) <span class="text-red-500">*</span></label>
+              <input type="number" name="custLoan" [(ngModel)]="currentCustomer.loan_amount" required min="1" (keypress)="numberOnly($event)" #custLoan="ngModel" class="w-full px-4 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 outline-none transition-all" [class.border-red-500]="custLoan.invalid && (custLoan.dirty || custLoan.touched)">
+            </div>
+            <!-- Start Date -->
+            <div>
+              <label class="block text-sm font-medium text-slate-700 mb-1">Start Date <span class="text-red-500">*</span></label>
+              <input type="date" name="custStart" [(ngModel)]="currentCustomer.start_date" required #custStart="ngModel" class="w-full px-4 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 outline-none transition-all" [class.border-red-500]="custStart.invalid && (custStart.dirty || custStart.touched)">
+            </div>
+            <!-- Duration (Days) -->
+            <div>
+              <label class="block text-sm font-medium text-slate-700 mb-1">Duration (Days) <span class="text-red-500">*</span></label>
+              <input type="number" name="custDuration" [(ngModel)]="currentCustomer.duration" required min="1" (keypress)="numberOnly($event)" #custDuration="ngModel" class="w-full px-4 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 outline-none transition-all" [class.border-red-500]="custDuration.invalid && (custDuration.dirty || custDuration.touched)">
+            </div>
+            <!-- Document Upload -->
+            <div class="md:col-span-2 pb-4">
+              <label class="block text-sm font-medium text-slate-700 mb-1">Identity Document (PAN/Aadhar)</label>
+              <div class="flex items-center gap-4">
+                <div class="relative w-16 h-16 rounded-lg bg-slate-100 border border-slate-300 flex items-center justify-center shrink-0 group">
+                  @if (currentCustomer.document) {
+                    <img [src]="currentCustomer.document" class="w-full h-full object-cover rounded-lg cursor-pointer" (click)="viewingImage = currentCustomer.document" title="Click to view">
+                    <button type="button" (click)="currentCustomer.document = undefined" class="absolute -top-2 -right-2 w-6 h-6 bg-red-500 text-white rounded-full flex items-center justify-center shadow hover:bg-red-600 transition-colors z-10" title="Remove document">
+                      <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>
+                    </button>
+                  } @else {
+                    <svg class="w-6 h-6 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 21h7a2 2 0 002-2V9.414a1 1 0 00-.293-.707l-5.414-5.414A1 1 0 0012.586 3H7a2 2 0 00-2 2v11m0 5l4.879-4.879m0 0a3 3 0 104.243-4.242 3 3 0 00-4.243 4.242z"></path></svg>
+                  }
+                </div>
+                <div class="flex-1">
+                  <input type="file" (change)="onDocumentSelected($event)" accept="image/*" class="w-full text-sm text-slate-500 file:mr-4 file:py-2 file:px-4 file:rounded-lg file:border-0 file:text-sm file:font-semibold file:bg-indigo-50 file:text-indigo-700 hover:file:bg-indigo-100 transition-all cursor-pointer">
+                  @if (isUploading) {
+                    <p class="text-sm font-medium text-indigo-600 flex items-center gap-2 mt-2">
+                      <svg class="animate-spin h-4 w-4 text-indigo-600" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle><path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path></svg>
+                      Uploading document...
+                    </p>
+                  }
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+        
+        <div class="px-6 py-4 border-t border-slate-200 bg-slate-50 flex items-center justify-end gap-3 shrink-0">
+          <button type="button" (click)="closeModal()" class="px-4 py-2 text-sm font-medium text-slate-700 bg-white border border-slate-300 rounded-lg hover:bg-slate-50 transition-colors">
+            Cancel
+          </button>
+          <button type="submit" [disabled]="!customerForm.form.valid" [class.opacity-50]="!customerForm.form.valid" [class.cursor-not-allowed]="!customerForm.form.valid" class="px-4 py-2 text-sm font-medium text-white bg-indigo-600 rounded-lg hover:bg-indigo-700 transition-colors">
+            Save Customer
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+}
+
+<!-- Details Modal -->
+@if (showDetailsModal && selectedCustomer) {
+  <div class="fixed inset-0 bg-slate-900/60 z-50 flex items-center justify-end">
+    <!-- Slide-over panel -->
+    <div class="bg-white w-full max-w-2xl h-full shadow-2xl flex flex-col transform transition-transform animate-slide-in-right">
+      
+      <div class="px-6 py-5 border-b border-slate-200 flex items-center justify-between shrink-0 bg-slate-50">
+        <h3 class="text-xl font-bold text-slate-800 flex items-center gap-3">
+          <button (click)="closeDetailsModal()" class="p-1 rounded hover:bg-slate-200 transition-colors text-slate-500">
+            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"></path></svg>
+          </button>
+          Customer Details
+        </h3>
+        <span class="px-3 py-1 bg-indigo-100 text-indigo-800 rounded-full text-xs font-semibold uppercase tracking-wider">{{ selectedCustomer.customer_id }}</span>
+      </div>
+
+      <div class="flex-1 overflow-y-auto p-6 space-y-8 custom-scrollbar">
+        <!-- Profile Section -->
+        <div class="flex flex-col sm:flex-row items-start sm:items-center gap-6 pb-6 border-b border-slate-100">
+          <div class="w-20 h-20 sm:w-24 sm:h-24 rounded-2xl bg-indigo-50 border border-indigo-100 flex items-center justify-center text-indigo-500 text-3xl font-bold uppercase shrink-0">
+            {{ selectedCustomer.name ? selectedCustomer.name.charAt(0) : 'C' }}
+          </div>
+          
+          <div class="flex-1">
+            <h2 class="text-2xl font-bold text-slate-800">{{ selectedCustomer.name }}</h2>
+            <p class="text-slate-500 flex items-center gap-2 mt-1">
+              <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z"></path></svg>
+              {{ selectedCustomer.phone }}
+            </p>
+            <p class="text-slate-500 flex items-center gap-2 mt-1">
+              <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"></path><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"></path></svg>
+              {{ selectedCustomer.area }} - {{ selectedCustomer.address }}
+            </p>
+          </div>
+        </div>
+
+        <!-- Financial Overview -->
+        <div>
+          <h4 class="text-sm font-semibold text-slate-800 uppercase tracking-wider mb-4">Financial Overview</h4>
+          <div class="grid grid-cols-2 gap-4">
+            <div class="bg-indigo-50 rounded-xl p-4 border border-indigo-100">
+              <p class="text-xs font-medium text-indigo-600 mb-1">Total Loan Amount</p>
+              <p class="text-xl font-bold text-indigo-900">{{ selectedCustomer.loan_amount | currency:'INR':'symbol':'1.0-0' }}</p>
+            </div>
+            <div class="bg-emerald-50 rounded-xl p-4 border border-emerald-100">
+              <p class="text-xs font-medium text-emerald-600 mb-1">Total Paid Amount</p>
+              <p class="text-xl font-bold text-emerald-900">{{ selectedCustomer.collected_amount | currency:'INR':'symbol':'1.0-0' }}</p>
+            </div>
+            <div class="bg-rose-50 rounded-xl p-4 border border-rose-100">
+              <p class="text-xs font-medium text-rose-600 mb-1">Total Pending Amount</p>
+              <p class="text-xl font-bold text-rose-900">{{ selectedCustomer.pending_amount | currency:'INR':'symbol':'1.0-0' }}</p>
+            </div>
+            <div class="bg-blue-50 rounded-xl p-4 border border-blue-100">
+              <p class="text-xs font-medium text-blue-600 mb-1">Duration & Status</p>
+              <p class="text-lg font-bold text-blue-900">{{ customerHistory.length }} / {{ selectedCustomer.duration }} Days</p>
+            </div>
+          </div>
+        </div>
+
+        <!-- Identity Document Section -->
+        @if (selectedCustomer.document) {
+          <div>
+            <h4 class="text-sm font-semibold text-slate-800 uppercase tracking-wider mb-4">Identity Document</h4>
+            <div class="bg-white border border-slate-200 rounded-xl p-2 shadow-sm inline-block">
+              <img [src]="selectedCustomer.document" class="max-w-full sm:max-w-md h-auto rounded-lg object-contain cursor-pointer hover:opacity-90 transition-opacity" (click)="viewingImage = selectedCustomer.document" title="Click to enlarge">
+            </div>
+          </div>
+        }
+
+        <!-- Collection History -->
+        <div>
+          <h4 class="text-sm font-semibold text-slate-800 uppercase tracking-wider mb-4">Recent Collection History</h4>
+          @if (customerHistory.length > 0) {
+            <div class="bg-white border border-slate-200 rounded-xl overflow-hidden shadow-sm">
+              <table class="w-full text-left text-sm">
+                <thead class="bg-slate-50 border-b border-slate-200">
+                  <tr>
+                    <th class="py-3 px-4 font-semibold text-slate-600">S.No</th>
+                    <th class="py-3 px-4 font-semibold text-slate-600">Date</th>
+                    <th class="py-3 px-4 font-semibold text-slate-600 text-right">Amount</th>
+                    <th class="py-3 px-4 font-semibold text-slate-600 text-center">Status</th>
+                  </tr>
+                </thead>
+                <tbody class="divide-y divide-slate-100">
+                  @for (record of customerHistory; track record.id; let i = $index) {
+                    <tr class="hover:bg-slate-50 transition-colors">
+                      <td class="py-3 px-4 text-slate-700">{{ i + 1 }}</td>
+                      <td class="py-3 px-4 text-slate-700">{{ record.collection_date | date:'mediumDate' }}</td>
+                      <td class="py-3 px-4 text-right font-medium text-slate-800">{{ record.amount | currency:'INR':'symbol':'1.0-0' }}</td>
+                      <td class="py-3 px-4 text-center">
+                        @if (record.status === 'Paid') {
+                          <span class="inline-flex items-center px-2 py-0.5 rounded text-xs font-medium bg-emerald-100 text-emerald-800">Paid</span>
+                        } @else {
+                          <span class="inline-flex items-center px-2 py-0.5 rounded text-xs font-medium bg-rose-100 text-rose-800">Unpaid</span>
+                        }
+                      </td>
+                    </tr>
+                  }
+                </tbody>
+              </table>
+            </div>
+          } @else {
+            <div class="text-center py-8 bg-slate-50 rounded-xl border border-dashed border-slate-200">
+              <p class="text-sm text-slate-500">No payment history available yet.</p>
+            </div>
+          }
+        </div>
+
+      </div>
+    </div>
+  </div>
+}
+
+<!-- Image Viewer Modal (Lightbox) -->
+@if (viewingImage) {
+  <div class="fixed inset-0 z-[100] bg-black/90 flex items-center justify-center p-4 animate-fade-in" (click)="viewingImage = null">
+    <button (click)="viewingImage = null" class="absolute top-4 right-4 text-white hover:text-gray-300 transition-colors p-2 z-[101]">
+      <svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>
+    </button>
+    <img [src]="viewingImage" class="max-w-[90vw] max-h-[90vh] object-contain rounded-lg shadow-2xl border border-white/10" (click)="$event.stopPropagation()">
+  </div>
+}
