@@ -1,6 +1,7 @@
 import { Injectable, inject } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
+import { environment } from '../../../environments/environment';
 
 export interface Customer {
   id?: number;
@@ -25,7 +26,7 @@ export interface Customer {
 })
 export class CustomerService {
   private http = inject(HttpClient);
-  private apiUrl = 'http://localhost:3000/customers';
+  private apiUrl = `${environment.apiUrl}/customers`;
 
   getCustomers(): Observable<Customer[]> {
     return this.http.get<Customer[]>(this.apiUrl);
@@ -46,10 +47,10 @@ export class CustomerService {
   uploadImage(file: File): Observable<{ message: string, urls: string[] }> {
     const formData = new FormData();
     formData.append('documents', file);
-    return this.http.post<{ message: string, urls: string[] }>('http://localhost:3000/upload', formData);
+    return this.http.post<{ message: string, urls: string[] }>(`${environment.apiUrl}/upload`, formData);
   }
 
   getCustomerHistory(customerId: string): Observable<any[]> {
-    return this.http.get<any[]>(`http://localhost:3000/collections/history/${customerId}`);
+    return this.http.get<any[]>(`${environment.apiUrl}/collections/history/${customerId}`);
   }
 }

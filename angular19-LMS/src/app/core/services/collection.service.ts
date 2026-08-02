@@ -1,6 +1,7 @@
 import { Injectable, inject } from '@angular/core';
 import { HttpClient, HttpParams } from '@angular/common/http';
 import { Observable } from 'rxjs';
+import { environment } from '../../../environments/environment';
 
 export interface CollectionRecord {
   id?: number;
@@ -28,7 +29,7 @@ export interface CollectionSummary {
 })
 export class CollectionService {
   private http = inject(HttpClient);
-  private apiUrl = 'http://localhost:3000/collections';
+  private apiUrl = `${environment.apiUrl}/collections`;
 
   getCollections(): Observable<CollectionRecord[]> {
     return this.http.get<CollectionRecord[]>(this.apiUrl);

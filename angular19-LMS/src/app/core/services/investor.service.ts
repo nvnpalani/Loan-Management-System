@@ -1,6 +1,7 @@
 import { Injectable, inject } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
+import { environment } from '../../../environments/environment';
 
 export interface Investor {
   id?: number;
@@ -18,7 +19,7 @@ export interface Investor {
 })
 export class InvestorService {
   private http = inject(HttpClient);
-  private apiUrl = 'http://localhost:3000/investors';
+  private apiUrl = `${environment.apiUrl}/investors`;
 
   getInvestors(): Observable<Investor[]> {
     return this.http.get<Investor[]>(this.apiUrl);
