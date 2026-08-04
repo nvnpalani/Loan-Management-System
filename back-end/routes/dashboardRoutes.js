@@ -5,10 +5,12 @@ const db = require("../database/database");
 router.get("/dashboard/stats", (req, res) => {
     const stats = {};
 
-    db.get("SELECT SUM(investment_amount) as totalInvestorAmount FROM investors", (err, invRow) => {
+    db.get("SELECT COUNT(*) as totalInvestors, SUM(investment_amount) as totalInvestorAmount, SUM(profit_paid) as totalInvestorPaidAmount FROM investors", (err, invRow) => {
         if (err) return res.status(500).json({ error: err.message });
         const totalInvestor = invRow.totalInvestorAmount || 0;
+        stats.totalInvestors = invRow.totalInvestors || 0;
         stats.totalLiveInvestorAmount = totalInvestor * 0.9; // Live Investment is 90% (Total - 10% Backup)
+        stats.totalInvestorPaidAmount = invRow.totalInvestorPaidAmount || 0;
 
         db.get("SELECT COUNT(*) as totalCustomers, SUM(loan_amount) as totalCustomerLoanAmount FROM customers", (err, custRow) => {
             if (err) return res.status(500).json({ error: err.message });

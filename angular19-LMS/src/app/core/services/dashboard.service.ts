@@ -4,7 +4,9 @@ import { Observable } from 'rxjs';
 import { environment } from '../../../environments/environment';
 
 export interface DashboardStats {
+  totalInvestors: number;
   totalLiveInvestorAmount: number;
+  totalInvestorPaidAmount: number;
   totalCustomers: number;
   totalCustomerLoanAmount: number;
   totalCollectedAmount: number;
