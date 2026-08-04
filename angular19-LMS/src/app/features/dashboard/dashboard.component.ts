@@ -17,6 +17,8 @@ export class DashboardComponent implements OnInit {
   totalLiveInvestorAmount = 0;
   investorPaidAmount = 0;
   investorPendingAmount = 0;
+  balanceInHand = 0;
+  totalAmountSpent = 0;
 
   // Customer Stats
   totalCustomers = 0;
@@ -48,6 +50,12 @@ export class DashboardComponent implements OnInit {
         
         // Pending Amount = Total Live Investment - Investor Paid
         this.investorPendingAmount = this.totalLiveInvestorAmount - this.investorPaidAmount;
+        
+        // Total Amount Spent (Loans given out + Returns Paid to investors)
+        this.totalAmountSpent = this.totalCustomerLoanAmount + this.investorPaidAmount;
+
+        // Balance in Hand (Available Balance) = Investment - Spent + Collected
+        this.balanceInHand = this.totalLiveInvestorAmount - this.totalAmountSpent + this.totalCollectedAmount;
 
         this.isLoading = false;
       },
