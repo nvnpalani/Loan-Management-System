@@ -13,7 +13,7 @@ const login = (req, res) => {
     }
 
     // 1.5 Check Collection Agent
-    if (username === 'customer@gmail.com' && password === 'cus@123') {
+    if (username === 'agent' && password === 'agent123') {
         return res.json({ role: 'employee', data: { name: 'Field Agent', id: 'agent_01', employee_id: 'agent_01' } });
     }
 
